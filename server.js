@@ -22,10 +22,15 @@ const buildPlaceholder = (nombres = '', apellidos = '') => {
 
 async function getPool() {
   const pool = await mysql.createPool({
-    host: process.env.DB_HOST || '127.0.0.1',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASS || '',
-    database: process.env.DB_NAME || 'larapi',
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306, // Añade el puerto desde las variables de entorno
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    // Habilita la conexión segura (SSL), requerida por TiDB Cloud
+    ssl: {
+      rejectUnauthorized: true,
+    },
     waitForConnections: true,
     connectionLimit: 10,
     charset: 'utf8mb4',
