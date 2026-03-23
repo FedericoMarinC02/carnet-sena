@@ -24,17 +24,35 @@ const buildPlaceholder = (nombres = '', apellidos = '') => {
 
 // ... (líneas de código)
 async function getPool() {
+  const rawUser = process.env.DB_USER || 'root';
+  const dbName = process.env.DB_NAME || 'larapi';
+  const inferredPrefix = dbName.includes('.') ? dbName.split('.')[0] : '';
+  const userPrefix = process.env.DB_USER_PREFIX || inferredPrefix;
+
+  let user;
+  if (rawUser.includes('.')) {
+    user = rawUser;
+  } else if (userPrefix) {
+    // Caso TiDB: si el usuario es igual al prefijo, usa <prefijo>.root
+    user = rawUser === userPrefix ? `${userPrefix}.root` : `${userPrefix}.${rawUser}`;
+  } else {
+    user = rawUser;
+  }
+
+  const database = dbName;
+
   const pool = await mysql.createPool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
-    user: process.env.DB_USER,
+    user,
     password: process.env.DB_PASS,
-    // Valor puesto directamente para diagnóstico para saltar problema de Render
-    database: '4Nt3NyvGLPWxviG.larapi',
-    ssl: {
-      rejectUnauthorized: true,
-    },
-// ... (más líneas de código)
+    database,
+    ssl:
+      process.env.DB_SSL_DISABLE === '1'
+        ? false
+        : {
+            rejectUnauthorized: false
+          },
     waitForConnections: true,
     connectionLimit: 10,
     charset: 'utf8mb4',
@@ -59,7 +77,8 @@ app.get('/personas', async (_req, res) => {
     res.json(withFotos);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'No se pudo leer la base de datos' });
+    // Devuelve lista vacía en lugar de 500 para no romper el cliente si la BD cae.
+    res.status(200).json([]);
   }
 });
 
@@ -85,3 +104,4 @@ app.get('/personas/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`API escuchando en http://127.0.0.1:${PORT}`);
 });
+
