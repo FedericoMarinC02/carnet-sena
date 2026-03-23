@@ -46,7 +46,9 @@ async function getPool() {
     port: process.env.DB_PORT || 3306,
     user,
     password: process.env.DB_PASS,
-    database,
+    // --- ¡LA CORRECCIÓN CLAVE! ---
+    // Apuntamos a la base de datos correcta en el formato requerido por TiDB Cloud.
+    database: '4Nt3NyvGLPWxviG.sena_accesos',
     ssl:
       process.env.DB_SSL_DISABLE === '1'
         ? false
@@ -64,7 +66,7 @@ app.get('/personas', async (_req, res) => {
   try {
     const pool = await getPool();
     const [rows] = await pool.query(
-      'SELECT id, tipo, centro, tipo_sangre, documento, nombres, apellidos, telefono, ficha, empresa, activo FROM personas'
+      'SELECT id, tipo, centro, tipo_sangre, documento, nombres, apellidos, telefono, empresa, activo FROM personas'
     );
     const withFotos = rows.map((p) => {
       if (p.foto && p.foto.trim()) return p;
@@ -86,7 +88,7 @@ app.get('/personas/:id', async (req, res) => {
   try {
     const pool = await getPool();
     const [rows] = await pool.query(
-      'SELECT id, tipo, centro, tipo_sangre, documento, nombres, apellidos, telefono, ficha, empresa, activo FROM personas WHERE id = ? OR documento = ? LIMIT 1',
+      'SELECT id, tipo, centro, tipo_sangre, documento, nombres, apellidos, telefono, empresa, activo FROM personas WHERE id = ? OR documento = ? LIMIT 1',
       [req.params.id, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'No encontrado' });
@@ -104,4 +106,3 @@ app.get('/personas/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`API escuchando en http://127.0.0.1:${PORT}`);
 });
-

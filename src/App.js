@@ -270,24 +270,57 @@ function App() {
   };
 
   useEffect(() => {
-    // Esta es la URL de tu API pública en Render
-    const API_URL = 'https://carnet-sena.onrender.com/personas';
+    const apiBase =
+      process.env.REACT_APP_API_URL ||
+      getApiBase() ||
+      'https://carnet-sena.onrender.com';
 
-    fetch(API_URL)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Error de red: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then(apiData => {
-        setPeople(apiData.map(d => normalizeRow(d, 0)));
-        setStatusMessage(`Datos cargados desde API (${apiData.length})`);
-      })
-      .catch(error => {
+    const fetchFromApi = async () => {
+      try {
+        const url = `${apiBase}/personas`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : Array.isArray(data?.data) ? data.data : [];
+        if (!list.length) throw new Error('API sin datos');
+        setPeople(list.map((d, idx) => normalizeRow(d, idx)));
+        setStatusMessage(`Datos cargados desde API (${list.length})`);
+        return true;
+      } catch (error) {
         console.error('Error al cargar los datos desde la API:', error);
-        setStatusMessage('Error consultando API. Mostrando datos vacíos.');
-      });
+        setStatusMessage('Error consultando API. Intentando CSV/local...');
+      }
+      return false;
+    };
+
+    const fetchFromCsv = async () => {
+      try {
+        const res = await fetch('/personas.csv');
+        if (!res.ok) return false;
+        const text = await res.text();
+        const workbook = XLSX.read(text, { type: 'string' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+        if (!json.length) return false;
+        setPeople(json.map(normalizeRow));
+        setStatusMessage(`Datos cargados desde personas.csv (${json.length})`);
+        return true;
+      } catch (error) {
+        console.error('Error leyendo personas.csv', error);
+      }
+      return false;
+    };
+
+    (async () => {
+      const okApi = await fetchFromApi();
+      if (!okApi) {
+        const okCsv = await fetchFromCsv();
+        if (!okCsv) {
+          setPeople([]);
+          setStatusMessage('No se pudieron cargar datos externos; lista vac�a.');
+        }
+      }
+    })();
   }, []);
 
   useEffect(() => {
@@ -445,3 +478,4 @@ function App() {
 }
 
 export default App;
+
