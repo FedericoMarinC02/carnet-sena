@@ -26,7 +26,8 @@ async function getPool() {
     port: process.env.DB_PORT || 3306, // Añade el puerto desde las variables de entorno
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    // Valor puesto directamente para diagnóstico para saltar problema de Render
+    database: '4Nt3NyvGLPWxviG.larapi',
     // Habilita la conexión segura (SSL), requerida por TiDB Cloud
     ssl: {
       rejectUnauthorized: true,

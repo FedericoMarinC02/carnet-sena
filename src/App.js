@@ -270,7 +270,8 @@ function App() {
   };
 
   useEffect(() => {
-    const API_URL = 'http://127.0.0.1:4000/personas';
+    // Esta es la URL de tu API pública en Render
+    const API_URL = 'https://carnet-sena.onrender.com/personas';
 
     fetch(API_URL)
       .then(response => {
