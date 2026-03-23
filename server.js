@@ -20,18 +20,21 @@ const buildPlaceholder = (nombres = '', apellidos = '') => {
   return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
 };
 
+// c:\Users\Vhelator\Desktop\carnet\server.js
+
+// ... (líneas de código)
 async function getPool() {
   const pool = await mysql.createPool({
     host: process.env.DB_HOST,
-    port: process.env.DB_PORT || 3306, // Añade el puerto desde las variables de entorno
+    port: process.env.DB_PORT || 3306,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     // Valor puesto directamente para diagnóstico para saltar problema de Render
     database: '4Nt3NyvGLPWxviG.larapi',
-    // Habilita la conexión segura (SSL), requerida por TiDB Cloud
     ssl: {
       rejectUnauthorized: true,
     },
+// ... (más líneas de código)
     waitForConnections: true,
     connectionLimit: 10,
     charset: 'utf8mb4',
