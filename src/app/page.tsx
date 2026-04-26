@@ -6,6 +6,7 @@ import {
   listPersons,
 } from "@/lib/persons";
 import { CarnetModalHost } from "./CarnetModalHost";
+import { SearchFilters } from "@/components/SearchFilters";
 
 /** Evita error de chunk al prerenderizar "/" con el modal y react-qr-code. */
 export const dynamic = "force-dynamic";
@@ -65,31 +66,13 @@ export default async function HomePage({
         </div>
       </header>
       <section className="panel">
-        <form method="get" className="search" action="/">
-          <input
-            type="search"
-            name="buscar"
-            placeholder="Buscar por documento o nombre"
-            defaultValue={buscar}
-          />
-          <select name="centro" defaultValue={centro}>
-            <option value="">Todos los centros</option>
-            {centros.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <select name="ficha" defaultValue={ficha}>
-            <option value="">Todas las fichas</option>
-            {fichas.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-          <button type="submit">Buscar</button>
-        </form>
+        <SearchFilters
+          centros={centros}
+          fichas={fichas}
+          initialBuscar={buscar}
+          initialCentro={centro}
+          initialFicha={ficha}
+        />
         <div className="grid">
           {persons.map((p) => (
             <article className="card-item" key={p.id}>
