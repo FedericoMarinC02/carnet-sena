@@ -1,0 +1,726 @@
+/* Export masivo: mismo diseño amplío que la app; una hoja A4 por carnet al imprimir */
+@page {
+  size: 55mm 85mm;
+  margin: 0;
+}
+
+/* Estilos del carnet para export HTML masivo (impresión). Alineado con globals.css */
+:root {
+  --sena-orange: #fc7323;
+  --sena-green: #238276;
+  --sena-green-dark: #1a6b61;
+  --sena-olive: #596548;
+  --neutral-900: #1b1b1b;
+  --carnet-accent: var(--sena-green);
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Work Sans", system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #fff;
+  color: #1f1f1f;
+  padding: 0;
+}
+
+.bulk-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: linear-gradient(135deg, var(--sena-green) 0%, #2a9d8a 100%);
+  color: #fff;
+  padding: 14px 20px;
+  margin: -24px -16px 28px;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.bulk-toolbar h1 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bulk-toolbar p {
+  margin: 0 0 12px;
+  font-size: 14px;
+  opacity: 0.95;
+}
+
+.bulk-toolbar button {
+  padding: 10px 22px;
+  background: #fff;
+  color: var(--sena-green);
+  border: 0;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.bulk-toolbar button:hover {
+  filter: brightness(1.05);
+}
+
+.bulk-carnet-page {
+  page-break-after: always;
+  break-after: page;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55mm;
+  min-height: 85mm;
+  margin: 0 auto;
+}
+
+.bulk-carnet-page--last {
+  page-break-after: auto;
+  break-after: auto;
+  margin-bottom: 0;
+}
+
+/* Bloque por carnet: sin achicar; solo centrado y sombra al ver en pantalla */
+.bulk-carnet-page,
+.bulk-carnet-page--last {
+  max-width: 55mm;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Cuadrícula export: doc | RH → ficha (col 1) → centro ancho completo */
+.bulk-carnet-page .info-grid--export {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px 14px;
+  align-content: start;
+}
+
+.bulk-carnet-page .info-grid--export .info-row--wide {
+  grid-column: 1 / -1;
+}
+
+.carnet-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.carnet-shell {
+  width: 100%;
+  max-width: 840px;
+  padding: 5px;
+  border-radius: 22px;
+  background: linear-gradient(
+    145deg,
+    rgba(35, 130, 118, 0.42),
+    rgba(252, 115, 35, 0.32) 50%,
+    rgba(35, 130, 118, 0.28)
+  );
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 28px 56px rgba(35, 130, 118, 0.14),
+    0 16px 40px rgba(0, 0, 0, 0.1);
+}
+
+.carnet {
+  --carnet-accent: var(--sena-green);
+  width: 100%;
+  min-height: 260px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    #ffffff 40%,
+    #f6faf9 100%
+  );
+  border-radius: 18px;
+  padding: 24px 26px 26px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(35, 130, 118, 0.14);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.carnet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(
+    rgba(35, 130, 118, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 14px 14px;
+  pointer-events: none;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 60%);
+}
+
+.carnet.tipo-instructor {
+  --carnet-accent: var(--sena-orange);
+}
+
+.carnet.tipo-visitante {
+  --carnet-accent: var(--sena-olive);
+}
+
+.carnet-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(
+    90deg,
+    var(--carnet-accent),
+    var(--sena-orange)
+  );
+  border-radius: 16px 16px 0 0;
+}
+
+.carnet .head-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.carnet .logo {
+  height: 70px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
+}
+
+.role-wrap {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.carnet .role {
+  display: inline-block;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    var(--carnet-accent),
+    var(--sena-green-dark)
+  );
+  box-shadow: 0 8px 20px rgba(35, 130, 118, 0.25);
+}
+
+.carnet.tipo-instructor .role {
+  background: linear-gradient(135deg, var(--sena-orange), #e85d0a);
+}
+
+.carnet.tipo-visitante .role {
+  background: linear-gradient(135deg, var(--sena-olive), #3d4536);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(200px, 228px) 1fr minmax(156px, 180px);
+  gap: 22px;
+  align-items: stretch;
+  position: relative;
+  z-index: 1;
+}
+
+.qr-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.qr-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.qr {
+  width: 204px;
+  height: 204px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: linear-gradient(180deg, #ffffff, #f8faf9);
+  border-radius: 16px;
+  border: 1px solid rgba(35, 130, 118, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    0 12px 32px rgba(35, 130, 118, 0.1),
+    0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.qr img {
+  width: 188px;
+  height: 188px;
+  display: block;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nombre {
+  font-size: 1.45rem;
+  color: var(--carnet-accent);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.info-grid {
+  margin: 0;
+  display: grid;
+  gap: 6px 12px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.info-row {
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  background: rgba(35, 130, 118, 0.06);
+  border-radius: 10px;
+  border: 1px solid rgba(35, 130, 118, 0.1);
+}
+
+.carnet.tipo-instructor .info-row {
+  background: rgba(252, 115, 35, 0.07);
+  border-color: rgba(252, 115, 35, 0.15);
+}
+
+.carnet.tipo-visitante .info-row {
+  background: rgba(89, 101, 72, 0.08);
+  border-color: rgba(89, 101, 72, 0.18);
+}
+
+.info-row--wide {
+  grid-column: 1 / -1;
+}
+
+.info-row dt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+  margin: 0;
+}
+
+.info-row dd {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  word-break: break-word;
+}
+
+.foto-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.foto {
+  width: 170px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #f0f5f3, #e2eae7);
+  border-radius: 16px;
+  padding: 5px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(35, 130, 118, 0.22),
+    0 16px 36px rgba(35, 130, 118, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.carnet.tipo-instructor .foto {
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.95),
+    0 0 0 3px rgba(252, 115, 35, 0.28),
+    0 16px 36px rgba(252, 115, 35, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.bulk-empty {
+  max-width: 520px;
+  margin: 60px auto;
+  padding: 28px;
+  background: #fff;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid #e5e7eb;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: auto;
+  }
+
+  .bulk-carnet-page,
+  .bulk-carnet-page--last {
+    max-width: none;
+    margin: 0 auto;
+    padding: 0;
+    box-shadow: none;
+    page-break-after: always;
+    break-after: page;
+    display: block;
+  }
+
+  .bulk-carnet-page--last {
+    page-break-after: auto;
+    break-after: auto;
+  }
+
+  .carnet {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .carnet-shell {
+    break-inside: avoid;
+  }
+
+  .carnet::before {
+    display: none;
+  }
+
+  .carnet {
+    box-shadow: none;
+    border: 2px solid #1a1a1a;
+  }
+}
+
+/* Layout vertical del carnet para exportacion, igual al de la app */
+.carnet-shell {
+  width: 55mm;
+  max-width: 55mm;
+  padding: 0;
+  border-radius: 3.2mm;
+  background: transparent;
+  box-shadow: none;
+  position: relative;
+}
+
+.frame-tab {
+  display: none;
+}
+
+.carnet {
+  --carnet-accent: var(--sena-green);
+  min-height: 85mm;
+  height: 85mm;
+  padding: 3mm 3mm 2.5mm;
+  border-radius: 3.2mm;
+  background: #fff;
+  border: 1px solid #dfe4df;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+.carnet.tipo-instructor,
+.carnet.tipo-visitante {
+  --carnet-accent: var(--sena-green);
+}
+
+.carnet::before,
+.carnet-accent {
+  display: none;
+}
+
+.top-band {
+  position: absolute;
+  left: 3mm;
+  right: 3mm;
+  top: 25.6mm;
+  height: 0.6mm;
+  background: #2fb36c;
+  border-radius: 999px;
+}
+
+.carnet .head-row {
+  justify-content: space-between;
+  align-items: flex-end;
+  align-items: flex-start;
+  gap: 2.2mm;
+  margin-bottom: 2.6mm;
+}
+
+.head-left {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.carnet .logo {
+  width: 10.2mm;
+  max-width: none;
+  height: auto;
+  margin-top: 0.6mm;
+  filter: none;
+}
+
+.foto-wrap {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.foto {
+  width: 19.5mm;
+  height: 21.5mm;
+  padding: 0;
+  overflow: hidden;
+  background: #f1f3f2;
+  border-radius: 0.6mm;
+  box-shadow: none;
+}
+
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.carnet .role {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #202020;
+  box-shadow: none;
+  font-size: 7.1pt;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.role-wrap {
+  justify-content: flex-start;
+}
+
+.role-wrap--head {
+  margin-top: 4.9mm;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4mm;
+  margin-bottom: 2.4mm;
+}
+
+.nombre {
+  display: block;
+  font-size: 9.6pt;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  color: #009b78;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+.doc-row {
+  display: flex;
+  align-items: baseline;
+  gap: 2mm;
+  flex-wrap: wrap;
+  color: #7d7d7d;
+  font-size: 7.2pt;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.doc-row--secondary {
+  margin-top: 0.4mm;
+}
+
+.doc-value,
+.rh-value {
+  font-weight: 500;
+}
+
+.rh-value {
+  margin-left: 0;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.2mm;
+  flex: 1;
+  width: 100%;
+}
+
+.qr-wrap {
+  align-items: flex-start;
+  width: 100%;
+  display: flex;
+}
+
+.qr,
+.qr img {
+  width: 27.5mm;
+  height: 27.5mm;
+}
+
+.qr {
+  padding: 0.7mm;
+  border-radius: 0;
+  background: #fff;
+  border: 0;
+  box-shadow: none;
+}
+
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5mm;
+  color: #40a090;
+  font-size: 7.8pt;
+  font-weight: 700;
+  line-height: 1.14;
+  margin-top: auto;
+  width: 100%;
+  padding-top: 1.3mm;
+  border-top: 0.35mm solid rgba(47, 179, 108, 0.28);
+}
+
+.meta-line--muted {
+  color: #2a2a2a;
+  font-size: 7pt;
+  font-weight: 500;
+}
+
+.meta-line--regional {
+  color: #1f1f1f;
+  font-size: 7.2pt;
+  font-weight: 700;
+}
+
+.meta-line:last-child {
+  font-size: 8.1pt;
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+@media print {
+  .carnet-shell {
+    width: 55mm;
+    max-width: 55mm;
+    padding: 0;
+    border-radius: 3.2mm;
+    background: transparent;
+  }
+
+  .carnet {
+    width: 55mm;
+    min-height: 85mm;
+    height: 85mm;
+    padding: 3mm 3mm 2.5mm;
+    border: 1px solid #d8dfdb;
+    box-shadow: none;
+    border-radius: 3.2mm;
+  }
+
+  .top-band {
+    left: 3mm;
+    right: 3mm;
+    top: 27mm;
+    height: 0.6mm;
+  }
+
+  .carnet .logo {
+    width: 9mm;
+  }
+
+  .foto {
+    width: 18.5mm;
+    height: 20.5mm;
+    border-radius: 0.6mm;
+  }
+
+  .carnet .role {
+    font-size: 7pt;
+  }
+
+  .nombre {
+    font-size: 9.2pt;
+  }
+
+  .doc-row {
+    font-size: 7.6pt;
+  }
+
+  .qr,
+  .qr img {
+    width: 24mm;
+    height: 24mm;
+  }
+
+  .qr {
+    padding: 0.7mm;
+  }
+
+  .footer-meta {
+    font-size: 5.8pt;
+  }
+
+  .bulk-carnet-page,
+  .bulk-carnet-page--last {
+    width: 55mm;
+    min-height: 85mm;
+    margin: 0 auto;
+  }
+}
